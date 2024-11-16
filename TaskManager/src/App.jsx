@@ -1,6 +1,7 @@
 import TaskInput from './components/TaskInput';
 import TaskList from './components/TaskList';
 import { useState, useEffect } from 'react';
+import ProgressBar from './components/ProgressBar'
 
 // Save tasks to localStorage
 const saveTasksToLocalStorage = (tasks) => {
@@ -28,14 +29,13 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false); // Tracks if data has been loaded from localStorage
 
-  // Load tasks from localStorage on component mount
+  // Load tasks from localStorage 
   useEffect(() => {
     const loadedTasks = loadTasksFromLocalStorage();
     setTasks(loadedTasks);
-    setIsLoaded(true); // Ensure tasks are loaded before enabling save logic
+    setIsLoaded(true); 
   }, []);
 
-  // Save tasks to localStorage whenever tasks change (but only after loading is complete)
   useEffect(() => {
     if (isLoaded) {
       saveTasksToLocalStorage(tasks);
@@ -57,6 +57,11 @@ function App() {
   const deleteTask = (id) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
+// for progress calc
+  const calculateProgress = () => {
+    const completedTasks = tasks.filter((task) => task.completed).length;
+    return tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -64,6 +69,7 @@ function App() {
         <h1 className="text-3xl font-semibold text-center text-indigo-600 mb-6">Task Manager</h1>
 
         <TaskInput addTask={addTask} />
+        <ProgressBar progress={calculateProgress()} />
 
         <TaskList
           tasks={tasks}
